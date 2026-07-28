@@ -23,11 +23,7 @@ export default async function UserDashboard() {
     .gte('booking_date', new Date().toISOString().split('T')[0])
     .order('booking_date', { ascending: true })
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('full_name')
-    .eq('id', user.id)
-    .single()
+
 
   return (
     <div className="min-h-screen bg-zinc-950">
@@ -41,7 +37,6 @@ export default async function UserDashboard() {
         <UserDashboardClient 
           initialBookings={bookings || []} 
           initialServices={services || []} 
-          userProfile={profile || {}}
         />
       </div>
     </div>

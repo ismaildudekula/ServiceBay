@@ -36,6 +36,7 @@ export default function Navbar({ user, role }: { user: { id: string; email?: str
   }
 
   const openModal = async () => {
+    if (!user) return
     setIsModalOpen(true)
     setLoading(true)
     const { data } = await supabase.from('profiles').select('full_name').eq('id', user.id).single()
@@ -47,9 +48,10 @@ export default function Navbar({ user, role }: { user: { id: string; email?: str
 
   const saveProfile = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!user) return
     setSaving(true)
     await supabase.from('profiles').update({ full_name: fullName }).eq('id', user.id)
-    setDisplayTitle(fullName || user.email)
+    setDisplayTitle(fullName || user.email || '')
     setSaving(false)
     setIsModalOpen(false)
   }
