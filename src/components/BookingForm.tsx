@@ -5,7 +5,20 @@ import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 
-export default function BookingForm({ providerId, services, schedules, user }: any) {
+interface Service {
+  id: string
+  title: string
+  duration_minutes: number
+  price: number
+}
+
+interface BookingFormProps {
+  providerId: string
+  services: Service[]
+  user: { id: string } | null
+}
+
+export default function BookingForm({ providerId, services, user }: BookingFormProps) {
   const supabase = createClient()
   const router = useRouter()
   const [selectedService, setSelectedService] = useState('')
@@ -39,8 +52,8 @@ export default function BookingForm({ providerId, services, schedules, user }: a
       if (!response.ok) throw new Error(data.error)
       setAvailableSlots(data.slots || [])
       if (data.slots?.length === 0) setError('No available slots for this date.')
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch slots')
+    } catch (err: unknown) {
+      setError((err as Error).message || 'Failed to fetch slots')
     } finally {
       setFetchingSlots(false)
     }
@@ -57,10 +70,11 @@ export default function BookingForm({ providerId, services, schedules, user }: a
     setLoading(true)
     setError('')
     try {
-      const service = services.find((s: any) => s.id === selectedService)
+      const service = services.find((s) => s.id === selectedService)
+      if (!service) throw new Error('Service not found')
+      
       const duration = service.duration_minutes
       
-      const [hours, minutes] = selectedSlot.split(':')
       const end = new Date(new Date(`2000-01-01T${selectedSlot}:00`).getTime() + duration * 60000)
       const endTimeString = end.toTimeString().substring(0, 5)
 
@@ -81,8 +95,8 @@ export default function BookingForm({ providerId, services, schedules, user }: a
       setSelectedService('')
       setDate('')
       setSelectedSlot('')
-    } catch (err: any) {
-      setError(err.message || 'Failed to complete booking')
+    } catch (err: unknown) {
+      setError((err as Error).message || 'Failed to complete booking')
     } finally {
       setLoading(false)
     }
@@ -103,7 +117,7 @@ export default function BookingForm({ providerId, services, schedules, user }: a
             onChange={(e) => setSelectedService(e.target.value)}
           >
             <option value="">-- Choose a service --</option>
-            {services.map((s: any) => (
+            {services.map((s) => (
               <option key={s.id} value={s.id}>{s.title} ({s.duration_minutes} min)</option>
             ))}
           </select>

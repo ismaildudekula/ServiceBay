@@ -81,7 +81,6 @@ export default async function ProviderProfilePage(props: { params: Promise<{ id:
               <BookingForm 
                 providerId={params.id} 
                 services={services || []} 
-                schedules={schedules || []}
                 user={user}
               />
             </div>

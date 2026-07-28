@@ -4,12 +4,37 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 
-export default function UserDashboardClient({ initialBookings, initialServices, userProfile }: any) {
-  const [activeTab, setActiveTab] = useState<'bookings' | 'services' | 'profile'>('bookings')
+interface Booking {
+  id: string
+  service?: { title: string }
+  provider?: { full_name: string }
+  status: string
+  booking_date: string
+  start_time: string
+}
+
+interface Service {
+  id: string
+  title: string
+  description?: string
+  price: number
+  duration_minutes: number
+  provider_id: string
+  provider?: { full_name: string }
+}
+
+export default function UserDashboardClient({ 
+  initialBookings, 
+  initialServices 
+}: { 
+  initialBookings: Booking[], 
+  initialServices: Service[] 
+}) {
+  const [activeTab, setActiveTab] = useState<'bookings' | 'services'>('bookings')
   
   const tabs = [
-    { id: 'bookings', label: 'My Bookings' },
-    { id: 'services', label: 'Available Services' },
+    { id: 'bookings' as const, label: 'My Bookings' },
+    { id: 'services' as const, label: 'Available Services' },
   ]
 
   return (
@@ -23,7 +48,7 @@ export default function UserDashboardClient({ initialBookings, initialServices, 
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => setActiveTab(tab.id)}
               className={`text-left px-4 py-3 rounded-xl transition-all font-medium flex items-center justify-between ${
                 activeTab === tab.id 
                   ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
@@ -52,7 +77,7 @@ export default function UserDashboardClient({ initialBookings, initialServices, 
               </div>
               
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                {initialBookings.map((booking: any) => (
+                {initialBookings.map((booking) => (
                   <div key={booking.id} className="border border-zinc-800 bg-zinc-950 rounded-2xl p-6 hover:border-zinc-700 transition-colors relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
                     <div className="flex justify-between items-start mb-4">
@@ -94,7 +119,7 @@ export default function UserDashboardClient({ initialBookings, initialServices, 
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {initialServices.map((service: any) => (
+                {initialServices.map((service) => (
                   <div key={service.id} className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 transition-colors flex flex-col justify-between group relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
                     <div>

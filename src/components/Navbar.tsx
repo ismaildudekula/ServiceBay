@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 
-export default function Navbar({ user, role }: { user: any, role?: string }) {
+export default function Navbar({ user, role }: { user: { id: string; email?: string } | null, role?: string }) {
   const supabase = createClient()
   const router = useRouter()
   
@@ -45,7 +45,7 @@ export default function Navbar({ user, role }: { user: any, role?: string }) {
     setLoading(false)
   }
 
-  const saveProfile = async (e: any) => {
+  const saveProfile = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
     await supabase.from('profiles').update({ full_name: fullName }).eq('id', user.id)
